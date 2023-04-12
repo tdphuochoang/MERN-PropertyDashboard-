@@ -1,14 +1,10 @@
-import { useLogin } from "@refinedev/core";
+import { useLogin } from "@pankod/refine-core";
+import { Box, Container } from "@pankod/refine-mui";
 import { useEffect, useRef } from "react";
 
-import { Box, Container, Typography } from "@mui/material";
-import { ThemedTitle } from "@refinedev/mui";
+import logo from "../assets/logo.png";
 
 import { CredentialResponse } from "../interfaces/google";
-
-// Todo: Update your Google Client ID here
-const GOOGLE_CLIENT_ID =
-	"1041339102270-jlljcjl19jo1hkgf695em3ibr7q2m734.apps.googleusercontent.com";
 
 export const Login: React.FC = () => {
 	const { mutate: login } = useLogin<CredentialResponse>();
@@ -39,46 +35,48 @@ export const Login: React.FC = () => {
 			} catch (error) {
 				console.log(error);
 			}
-		}, []);
+		}, []); // you can also add your client id as dependency here
 
 		return <div ref={divRef} />;
 	};
 
 	return (
-		<Container
-			style={{
-				height: "100vh",
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
+		<Box
+			component="div"
+			sx={{
+				backgroundColor: "#FCFCFC",
 			}}
 		>
-			<Box
-				display="flex"
-				gap="36px"
-				justifyContent="center"
-				flexDirection="column"
+			<Container
+				component="main"
+				maxWidth="xs"
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					justifyContent: "center",
+					height: "100vh",
+				}}
 			>
-				<ThemedTitle
-					collapsed={false}
-					wrapperStyles={{
-						fontSize: "22px",
+				<Box
+					sx={{
+						display: "flex",
 						justifyContent: "center",
+						flexDirection: "column",
+						alignItems: "center",
 					}}
-				/>
-
-				<GoogleButton />
-
-				<Typography align="center" color={"text.secondary"} fontSize="12px">
-					Powered by
-					<img
-						style={{ padding: "0 5px" }}
-						alt="Google"
-						src="https://refine.ams3.cdn.digitaloceanspaces.com/superplate-auth-icons%2Fgoogle.svg"
-					/>
-					Google
-				</Typography>
-			</Box>
-		</Container>
+				>
+					<div>
+						<img
+							src={logo}
+							alt="MyLogo"
+							style={{ height: "5em", width: "5em", objectFit: "cover" }}
+						/>
+					</div>
+					<Box mt={4}>
+						<GoogleButton />
+					</Box>
+				</Box>
+			</Container>
+		</Box>
 	);
 };

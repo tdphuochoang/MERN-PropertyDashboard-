@@ -218,7 +218,15 @@ const Form = ({
 
 					<CustomButton
 						type="submit"
-						title={formLoading ? "Submitting..." : "Submit"}
+						title={
+							formLoading
+								? type === "Edit"
+									? "Updating..."
+									: "Submitting..."
+								: type === "Edit"
+								? "Update"
+								: "Submit"
+						}
 						backgroundColor="#475be8"
 						color="#fcfcfc"
 					/>

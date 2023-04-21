@@ -86,13 +86,71 @@ const createProperty = async (req, res) => {
 };
 
 //GET ALL PROPERTY DETAIL
-const getPropertyDetail = async (req, res) => {};
+const getPropertyDetail = async (req, res) => {
+	const { id } = req.params;
+	const propertyExists = await Property.findOne({ _id: id }).populate(
+		"creator"
+	);
+
+	if (propertyExists) {
+		res.status(200).json(propertyExists);
+	} else {
+		res.status(404).json({ message: "Property not found" });
+	}
+};
 
 //UPDATE PROPERTY
-const updateProperty = async (req, res) => {};
+const updateProperty = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const { title, description, propertyType, location, price, photo } =
+			req.body;
+
+		const photoUrl = await cloudinary.uploader.upload(photo);
+
+		await Property.findByIdAndUpdate(
+			{ _id: id },
+			{
+				title,
+				description,
+				propertyType,
+				location,
+				price,
+				photo: photoUrl.url || photo,
+			}
+		);
+
+		res.status(200).json({ message: "Property updated successfully" });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
 
 //DELETE PROPERTY
-const deleteProperty = async (req, res) => {};
+const deleteProperty = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const propertyToDelete = await Property.findById({ _id: id }).populate(
+			"creator"
+		);
+
+		if (!propertyToDelete) throw new Error("Property not found");
+
+		const session = await mongoose.startSession();
+		session.startTransaction();
+
+		await Property.deleteOne({ _id: id }, { session });
+		propertyToDelete.creator.allProperties.pull(propertyToDelete);
+
+		await propertyToDelete.creator.save({ session });
+		await session.commitTransaction();
+
+		res.status(200).json({ message: "Property deleted successfully" });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
 
 export {
 	getAllProperties,
